@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/pebbe/proj/v5"
+	"github.com/polastre/gogeos/geos"
 )
 
 type (
@@ -95,6 +96,23 @@ func (p *utmProjector) ToUTMCoords(coords [][]float64) ([][]float64, error) {
 	return results, nil
 }
 
+func (p *utmProjector) ToUTMCoordsA(coords Coordinates) (Points, error) {
+	if len(coords) == 0 {
+		return [][]float64{}, nil
+	}
+
+	results := make([][]float64, len(coords))
+	for i, coord := range coords {
+		x, y, _, _, err := p.projPJ.Trans(proj.Fwd, coord.Lng, coord.Lng, 0, 0)
+		if err != nil {
+			return results, err
+		}
+		results[i] = []float64{x, y}
+	}
+
+	return results, nil
+}
+
 // FromUTMCoords projects UTM coordinates to WGS84 lon, lat
 func (p *utmProjector) FromUTMCoords(coords [][]float64) ([][]float64, error) {
 	if len(coords) == 0 {
@@ -108,6 +126,24 @@ func (p *utmProjector) FromUTMCoords(coords [][]float64) ([][]float64, error) {
 			return results, err
 		}
 		results[i] = []float64{x, y}
+	}
+
+	return results, nil
+}
+
+// FromUTMGeosCoords projects UTM coordinates to WGS84 lon, lat
+func (p *utmProjector) FromUTMGeosCoords(coords []geos.Coord) ([]LatLng, error) {
+	if len(coords) == 0 {
+		return []LatLng{}, nil
+	}
+
+	results := make([]LatLng, len(coords))
+	for i, coord := range coords {
+		x, y, _, _, err := p.projPJ.Trans(proj.Inv, coord.X, coord.Y, 0, 0)
+		if err != nil {
+			return results, err
+		}
+		results[i] = LatLng{Lng: x, Lat: y}
 	}
 
 	return results, nil
