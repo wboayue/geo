@@ -103,7 +103,7 @@ func (p *utmProjector) ToUTMCoordsA(coords Coordinates) (Points, error) {
 
 	results := make([][]float64, len(coords))
 	for i, coord := range coords {
-		x, y, _, _, err := p.projPJ.Trans(proj.Fwd, coord.Lng, coord.Lng, 0, 0)
+		x, y, _, _, err := p.projPJ.Trans(proj.Fwd, coord.Lng, coord.Lat, 0, 0)
 		if err != nil {
 			return results, err
 		}

@@ -66,7 +66,7 @@ func (p *LatLng) Distance(other *LatLng) float64 {
 
 // WKT generates well known text representation
 func (p *LatLng) WKT() string {
-	return fmt.Sprintf("POINT (%.6f, %.6f)", p.Lng, p.Lat)
+	return fmt.Sprintf("POINT (%.6f %.6f)", p.Lng, p.Lat)
 }
 
 // GeoJSON generates Geo JSON representation
@@ -123,6 +123,11 @@ func (c *Circle) AsRegion() *Region {
 	return &Region{
 		Vertices: points,
 	}
+}
+
+// ContainsCoord determines if circle contains coordinate
+func (c *Circle) ContainsCoord(coord LatLng) bool {
+	return c.AsRegion().ContainsCoord(coord)
 }
 
 func (r *Region) Union(other *Region) *Region {
@@ -271,4 +276,41 @@ func (r *Region) GeoJSON() string {
 	}
 	exterior := strings.Join(vertices, ",")
 	return fmt.Sprintf(`{"type":"Polygon","coordinates":[[%s]]}`, exterior)
+}
+
+// ContainsCoord determines if region contains coordinate
+func (r *Region) ContainsCoord(coord LatLng) bool {
+	start := r.Vertices[0]
+	projector, err := NewUTMProjectorForCoords(start.Lng, start.Lat)
+	if err != nil {
+		panic(err)
+	}
+	defer projector.Close()
+
+	pointsA, err := projector.ToUTMCoordsA(r.Vertices)
+	if err != nil {
+		panic(err)
+	}
+
+	geoA, err := geos.FromWKT(pointsA.WKT())
+	if err != nil {
+		panic(err)
+	}
+
+	x, y, err := projector.ToUTMCoord(coord.Lng, coord.Lat)
+	if err != nil {
+		panic(err)
+	}
+
+	point, err := geos.FromWKT(fmt.Sprintf("POINT (%.6f %.6f)", x, y))
+	if err != nil {
+		panic(err)
+	}
+
+	in, err := geoA.Contains(point)
+	if err != nil {
+		panic(err)
+	}
+
+	return in
 }

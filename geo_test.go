@@ -25,7 +25,7 @@ func TestLatLng(t *testing.T) {
 	})
 
 	t.Run("wkt", func(t *testing.T) {
-		assert.Equal(t, "POINT (-10.773746, 6.287188)", coordA.WKT())
+		assert.Equal(t, "POINT (-10.773746 6.287188)", coordA.WKT())
 	})
 
 	t.Run("geojson", func(t *testing.T) {
@@ -35,10 +35,14 @@ func TestLatLng(t *testing.T) {
 }
 
 func TestCircle(t *testing.T) {
+	center := LatLng{Lng: -10.773746, Lat: 6.287188}
+
 	circle := Circle{
-		Center: LatLng{Lng: -10.773746, Lat: 6.287188},
+		Center: center,
 		Radius: 200.0,
 	}
+
+	exteriorCoord := LatLng{Lng: -10.776922, Lat: 6.291283}
 
 	t.Run("buffer", func(t *testing.T) {
 		buffer := 200.0 // meters
@@ -58,5 +62,10 @@ func TestCircle(t *testing.T) {
 		assert.Equal(t, 33, len(region.Vertices))
 		assert.Equal(t, expectedWKT, region.WKT())
 		assert.Equal(t, expectedGeoJSON, region.GeoJSON())
+	})
+
+	t.Run("contains", func(t *testing.T) {
+		assert.True(t, circle.ContainsCoord(center))
+		assert.False(t, circle.ContainsCoord(exteriorCoord))
 	})
 }
