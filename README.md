@@ -1,4 +1,5 @@
 ![test](https://github.com/wboayue/geo/workflows/ci/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/wboayue/geo)](https://goreportcard.com/report/github.com/wboayue/geo)
 
 # Overview
 
