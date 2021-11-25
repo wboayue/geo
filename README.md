@@ -18,8 +18,8 @@ import (
 func main() {
     // Distance between coordinates
 
-	a := geo.LatLng{Lng: -10.773746, Lat: 6.287188}
-	b := geo.LatLng{Lng: -10.774412, Lat: 6.285524}
+    a := geo.LatLng{Lng: -10.773746, Lat: 6.287188}
+    b := geo.LatLng{Lng: -10.774412, Lat: 6.285524}
 
     distance_M := a.Distance(b)
     // 198.0
