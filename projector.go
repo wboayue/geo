@@ -31,7 +31,7 @@ func NewUTMProjectorForCoords(lon, lat float64) (*utmProjector, error) {
 	return NewUTMProjectorForZone(xz)
 }
 
-// NewUTMProjectorFromZone creates and utmProjector for specified longitudinal UTM zone.
+// NewUTMProjectorForZone creates and utmProjector for specified longitudinal UTM zone.
 //
 // Reference:
 //   UTM Grid Zones of the World compiled by Alan Morton
