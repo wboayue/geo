@@ -69,3 +69,68 @@ func TestCircle(t *testing.T) {
 		assert.False(t, circle.ContainsCoord(exteriorCoord))
 	})
 }
+
+func TestRegion(t *testing.T) {
+	regionA := Region{
+		Vertices: []LatLng{
+			{Lng: -10.764369, Lat: 6.284756},
+			{Lng: -10.764112, Lat: 6.282111},
+			{Lng: -10.761880, Lat: 6.282282},
+			{Lng: -10.751838, Lat: 6.295250},
+			{Lng: -10.754671, Lat: 6.296871},
+			{Lng: -10.764369, Lat: 6.284756},
+		},
+	}
+
+	regionB := Region{
+		Vertices: []LatLng{
+			{Lng: -10.764842, Lat: 6.285353},
+			{Lng: -10.767159, Lat: 6.284671},
+			{Lng: -10.766687, Lat: 6.281557},
+			{Lng: -10.764927, Lat: 6.279680},
+			{Lng: -10.761451, Lat: 6.280746},
+			{Lng: -10.760035, Lat: 6.283263},
+			{Lng: -10.764842, Lat: 6.285353},
+		},
+	}
+
+	coordInA := LatLng{Lng: -10.755701, Lat: 6.292605}
+	coordInB := LatLng{Lng: -10.765228, Lat: 6.281173}
+	coordInAandB := LatLng{Lng: -10.762996, Lat: 6.283562}
+	coordOutsideAandB := LatLng{Lng: -10.763683, Lat: 6.288510}
+
+	t.Run("contains", func(t *testing.T) {
+		assert.True(t, regionA.ContainsCoord(coordInA))
+		assert.True(t, regionA.ContainsCoord(coordInAandB))
+		assert.False(t, regionA.ContainsCoord(coordInB))
+		assert.False(t, regionA.ContainsCoord(coordOutsideAandB))
+	})
+
+	t.Run("union", func(t *testing.T) {
+		union := regionA.Union(&regionB)
+
+		assert.True(t, union.ContainsCoord(coordInA))
+		assert.True(t, union.ContainsCoord(coordInAandB))
+		assert.True(t, union.ContainsCoord(coordInB))
+		assert.False(t, union.ContainsCoord(coordOutsideAandB))
+	})
+
+	t.Run("intersection", func(t *testing.T) {
+		intersection := regionA.Intersection(&regionB)
+
+		assert.False(t, intersection.ContainsCoord(coordInA))
+		assert.True(t, intersection.ContainsCoord(coordInAandB))
+		assert.False(t, intersection.ContainsCoord(coordInB))
+		assert.False(t, intersection.ContainsCoord(coordOutsideAandB))
+	})
+
+	t.Run("convexhull", func(t *testing.T) {
+		union := regionA.Union(&regionB)
+		convexhull := union.ConvexHull()
+
+		assert.True(t, convexhull.ContainsCoord(coordInA))
+		assert.True(t, convexhull.ContainsCoord(coordInAandB))
+		assert.True(t, convexhull.ContainsCoord(coordInB))
+		assert.False(t, convexhull.ContainsCoord(coordOutsideAandB))
+	})
+}
