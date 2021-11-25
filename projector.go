@@ -1,4 +1,4 @@
-package main
+package geo
 
 // Go wrapper to `proj` library for WGS84 projections
 
